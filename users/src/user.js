@@ -13,7 +13,11 @@ const UserSchema = new Schema({
         required: [true, 'Name is required.']
     },
     posts: [PostSchema],
-    likes: Number
+    likes: Number,
+    blogPosts: [{
+        type: Schema.Types.ObjectId,
+        ref: 'blogPost'
+    }]
 }, { usePushEach: true });  // usePushEach because of .push for inner posts array won't work otherwise -> it's deprecated
 
 // The 'this' keyword is why we use the function syntax in the callback here
