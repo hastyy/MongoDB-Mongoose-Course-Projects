@@ -26,6 +26,21 @@ UserSchema.virtual('postCount').get(function() {
     return this.posts.length;
 });
 
+// Pre remove-event middleware
+// function instead of fat arrow because of 'this' binding
+UserSchema.pre('remove', function(next) {
+    // Right way to get the model for blogPost here, instead of requiring it
+    // bacause if we need the User model in BlogPost later, we will have an
+    // import cycle and no correct order to load both modules (one depends on the other and vice-versa)
+    // Since this callback function will only run after our app boots up, even if we have the same line
+    // as above in the BlogPost schema to access the User model, we won't have any cycle problems because
+    // both models will be defined by then.
+    const BlogPost = mongoose.model('blogPost');
+
+    BlogPost.remove({ _id: { $in: this.blogPosts } })
+        .then(() => next());
+});
+
 // Represents the user collection - Can be seen as the Repository (SPRING analogy)
 const User = mongoose.model('user', UserSchema);
 
